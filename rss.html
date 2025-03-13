@@ -1,0 +1,84 @@
+<div id="container">
+    <div id="register-container">
+        <h2>Create Account</h2>
+        <input id="register-username"
+            type="text"
+            placeholder="Username" />
+        <input id="register-password"
+            type="password"
+            placeholder="Password" />
+        <button id="register-btn">Register</button>
+        <p id="register-message"></p>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #chat-container {
+            display: none;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #messages li {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let username = '';
+
+        document.getElementById('register-btn').addEventListener('click', async () => {
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            const data = await response.json();
+            document.getElementById('register-message').innerText = data.message;
+        });
+        
+
+
+    </script>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+
+<body>
+  <style> 
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: cornsilk;
+}
+
+#container {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+input,
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#chat-container {
+    display: none;
+}
+
+#messages {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#messages li {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+    text-align:right;
+    
+}
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    .header {
+      grid-area: header;
+      background-color: #f1f1f1;
+      padding: 2px;
+      text-align: center;
+      
+      text-transform: uppercase;
+      border-style: double;
+
+      font-size: 30px;
+      
+      text-transform: uppercase;
+            border-style: double;
+            border-radius: 50%;
+            border-width: 10px;
+            font-size: 30px;
+            border-bottom-color: red;
+            border-left-color:green;
+            border-right-color: yellow;
+            border-top-color: white;
+
+
+    }
+
+
+    .grid-container {
+      display: grid;
+      grid-template-areas:
+        'header header header header header header'
+        'left left middle middle right right'
+        'footer footer footer footer footer footer';
+      grid-column-gap: 1px;
+    }
+
+    .left,
+    .middle,
+    .right {
+      padding: 10px;
+      height: 100%;
+      text-align: center;
+      background-color: cornsilk;
+    }
+
+
+    .left {
+      grid-area: left;
+    }
+
+
+    .middle {
+      grid-area: middle;
+      animation-name: example;
+      animation-duration: 10s;
+      animation-iteration-count: infinite;
+      animation-direction: reverse;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+    }
+    @keyframes example {  0%   {background-color:red; left:0px; top:0px;}
+  25%  {background-color:yellow; left:200px; top:0px;}
+  50%  {background-color:blue; left:200px; top:200px;}
+  75%  {background-color:green; left:0px; top:200px;}
+  100% {background-color:red; left:0px; top:0px;}
+}
+
+
+
+    .right {
+      grid-area: right;
+    }
+
+
+    .footer {
+      grid-area: footer;
+      background-color: #f1f1f1;
+      padding: 10px;
+      text-align: center;
+    }
+
+
+    @media (max-width: 100px) {
+      .grid-container {
+        grid-template-areas:
+          'header header header header header header'
+          'left left left left left left'
+          'middle middle middle middle middle middle'
+          'right right right right right right'
+          'footer footer footer footer footer footer';
+      }
+    }
+  </style>
+  </head>
+
+  <body>
+
+    <div class="grid-container">
+      <div class="header">
+        <h2> <strong>
+            <center>
+              <hi>Redeemer Secondary School Project</hi>
+            </center>
+          </strong></h2>
+      </div>
+
+      <div class="left">
+        <div id="container">
+          <div id="register-container">
+            <h2>Create Account</h2>
+            <input id="register-username"
+              type="text"
+              placeholder="Username" />
+            <input id="register-password"
+              type="password"
+              placeholder="Password" />
+            <button id="register-btn">Register</button>
+            <p id="register-message"></p>
+          </div>
+        </div> 
+      </div>   
+
+          <div class="middle"
+            style="background-color:green;">
+            <div id="login-container">
+              <h2>Login</h2>
+              <input id="login-username"
+                type="text"
+                placeholder="Username" />
+              <input id="login-password"
+                type="password"
+                placeholder="Password" />
+              <button id="login-btn">Login</button>
+              <p id="login-message"></p>
+            </div>
+          
+
+
+              <div id="chat-container">
+                <h2>Chat</h2>
+                <ul id="messages"></ul>
+                <input id="message-input"
+                  type="text"
+                  placeholder="Type a message..." />
+                <input id="file"
+                  type="file"
+                  placeholder="choose your file to upload" />
+                <button id="send-btn">Send</button>
+                <link href="view-active-friends"
+                  aria-placeholder="click to view friends">
+
+              </div>
+            </div>
+            <div class="right"
+              style="background-color:red;"><a href="rss.html">Click to join the school</div>
+
+            <div class="footer">
+              <p>Footer</p>
+            </div>
+
+          </div>
+        </div>
+  </body>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let username = '';
+
+    document.getElementById('register-btn').addEventListener('click', async () => {
+        const username = document.getElementById('register-username').value.trim();
+        const password = document.getElementById('register-password').value.trim();
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+        const data = await response.json();
+        document.getElementById('register-message').innerText = data.message;
+    });
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const usernameInput = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usernameInput, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            username = usernameInput;
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('register-container').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'block';
+        }
+        document.getElementById('login-message').innerText = data.message;
+    });
+
+    document.getElementById('send-btn').addEventListener('click', () => {
+        const message = document.getElementById('message-input').value.trim();
+        if (message) {
+            socket.emit('chatMessage', { username, message });
+            document.getElementById('message-input').value = '';
+        }
+    });
+
+    socket.on('chatMessage', (data) => {
+        const messagesList = document.getElementById('messages');
+        const messageItem = document.createElement('li');
+        messageItem.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        messagesList.appendChild(messageItem);
+    });
+  </script>
+</body>
+
+</html>
